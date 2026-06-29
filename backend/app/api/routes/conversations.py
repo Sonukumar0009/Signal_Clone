@@ -363,8 +363,14 @@ async def send_message(conversation_id: str, msg_req: MessageCreate, db: AsyncSe
     loaded_msg = res.scalars().first()
     
     # Broadcast via WebSockets
+# Broadcast via WebSockets to conversation participants only
     msg_resp = MessageResponse.model_validate(loaded_msg)
-    await manager.broadcast(json.dumps({
+    participant_result = await db.execute(
+        select(ConversationParticipant.user_id)
+        .where(ConversationParticipant.conversation_id == conversation_id)
+    )
+    participant_ids = participant_result.scalars().all()
+    await manager.broadcast_to_users(participant_ids, json.dumps({
         "type": "message.new",
         "conversation_id": conversation_id,
         "message": msg_resp.model_dump(mode='json')

@@ -55,6 +55,20 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
               last_message: msg,
               unread_count: newUnread
             });
+          } else {
+            // Conversation not in sidebar yet (e.g. friend just added us to a group)
+            // Fetch it from the server and add it
+            import('@/lib/api').then(({ default: api }) => {
+              api.get(`/api/conversations/${msg.conversation_id}`)
+                .then((res) => {
+                  useConversationStore.getState().addConversation({
+                    ...res.data,
+                    last_message: msg,
+                    unread_count: msg.sender_id !== currentUserId ? 1 : 0,
+                  });
+                })
+                .catch(console.error);
+            });
           }
         } else if (data.type === 'message.reaction') {
           const { useMessageStore } = require('./messageStore');
