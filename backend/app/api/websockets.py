@@ -33,14 +33,21 @@ class ConnectionManager:
             await self.active_connections[user_id].send_text(message)
 
     async def broadcast(self, message: str):
-        for connection in list(self.active_connections.values()):
-            await connection.send_text(message)
+        for user_id, connection in list(self.active_connections.items()):
+            try:
+                await connection.send_text(message)
+            except Exception:
+                self.active_connections.pop(user_id, None)
 
     async def broadcast_to_users(self, user_ids: Iterable[str], message: str):
         for user_id in set(user_ids):
             connection = self.active_connections.get(user_id)
             if connection:
-                await connection.send_text(message)
+                try:
+                    await connection.send_text(message)
+                except Exception:
+                    # Connection is stale/closed, remove it
+                    self.active_connections.pop(user_id, None)
 
     def is_connected(self, user_id: str) -> bool:
         return user_id in self.active_connections
