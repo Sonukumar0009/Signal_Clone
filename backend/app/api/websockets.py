@@ -70,6 +70,10 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, db: AsyncSessio
                 if event_type == "message.read" and not allow_read:
                     continue
                 
+                if event_type == "ping":
+                    await websocket.send_text(json.dumps({"type": "pong"}))
+                    continue
+                
                 if event_type in ["typing.start", "typing.stop", "message.read", "message.delivered"]:
                     event["user_id"] = user_id
                     participant_result = await db.execute(

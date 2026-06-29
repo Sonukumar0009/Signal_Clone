@@ -19,11 +19,24 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
     
     ws.onopen = () => {
       set({ isConnected: true });
+      // Keepalive ping every 30 seconds to prevent Render from sleeping
+      const pingInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'ping' }));
+        } else {
+          clearInterval(pingInterval);
+        }
+      }, 30000);
+      (ws as any)._pingInterval = pingInterval;
     };
     
     ws.onclose = () => {
+      // Clear ping interval on close
+      const currentWs = get().ws;
+      if (currentWs && (currentWs as any)._pingInterval) {
+        clearInterval((currentWs as any)._pingInterval);
+      }
       set({ isConnected: false, ws: null });
-      // In a real app we'd do exponential backoff here
     };
     
     ws.onmessage = (event) => {
