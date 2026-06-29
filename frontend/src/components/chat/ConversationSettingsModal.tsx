@@ -36,7 +36,7 @@ export function ConversationSettingsModal({ conversationId, isOpen, onClose }: C
   if (!isOpen || !conversation) return null;
 
   const isGroup = conversation.type === 'group';
-  const isAdmin = currentUser?.id === conversation.group_admin_id;
+  const isAdmin = !!conversation.group_admin_id && currentUser?.id === conversation.group_admin_id;
 
   const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,7 +179,7 @@ export function ConversationSettingsModal({ conversationId, isOpen, onClose }: C
                         </div>
                       </div>
                       
-                      {isAdmin && p.id !== currentUser?.id && (
+                      {isAdmin && p.id !== currentUser?.id && p.id !== conversation.group_admin_id && (
                         <button 
                           onClick={() => handleRemoveMember(p.id)}
                           className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg"

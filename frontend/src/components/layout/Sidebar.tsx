@@ -71,10 +71,16 @@ export function Sidebar() {
     <div className="w-full md:w-[360px] lg:w-[400px] flex-shrink-0 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-[#111B21] flex flex-col h-full">
       {/* Header */}
       <div className="h-16 px-4 flex items-center justify-between bg-gray-100 dark:bg-[#202C33]">
-        <Avatar className="w-10 h-10">
-          <AvatarImage src={user?.avatar_url} />
-          <AvatarFallback>{user?.display_name?.charAt(0)}</AvatarFallback>
-        </Avatar>
+        <div className="flex items-center gap-3">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={user?.avatar_url} />
+            <AvatarFallback>{user?.display_name?.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold dark:text-[#E9EDEF] text-gray-900 leading-tight">{user?.display_name}</span>
+            <span className="text-xs text-gray-500 dark:text-[#8696A0]">You</span>
+          </div>
+        </div>
         
         <div className="flex items-center space-x-3 text-gray-500 dark:text-gray-400">
           <button 
@@ -85,6 +91,13 @@ export function Sidebar() {
             <CircleDashed className="w-5 h-5" />
           </button>
           <NewChatModal />
+          <button
+            onClick={handleLogout}
+            className="p-2 hover:bg-gray-200 dark:hover:bg-[#374045] rounded-full transition-colors text-red-500"
+            title="Logout"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
           <DropdownMenu>
             <DropdownMenuTrigger className="p-2 hover:bg-gray-200 dark:hover:bg-[#374045] rounded-full transition-colors">
               <MoreVertical className="w-5 h-5" />
@@ -106,6 +119,7 @@ export function Sidebar() {
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
+            
           </DropdownMenu>
         </div>
       </div>
