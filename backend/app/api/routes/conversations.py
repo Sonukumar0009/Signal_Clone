@@ -362,8 +362,8 @@ async def send_message(conversation_id: str, msg_req: MessageCreate, db: AsyncSe
     )
     loaded_msg = res.scalars().first()
     
-    # Broadcast via WebSockets
-# Broadcast via WebSockets to conversation participants only
+    
+    # Broadcast via WebSockets to conversation participants only
     msg_resp = MessageResponse.model_validate(loaded_msg)
     participant_result = await db.execute(
         select(ConversationParticipant.user_id)
@@ -375,7 +375,7 @@ async def send_message(conversation_id: str, msg_req: MessageCreate, db: AsyncSe
         "conversation_id": conversation_id,
         "message": msg_resp.model_dump(mode='json')
     }))
-    
+
     return msg_resp
 
 @router.put("/{conversation_id}/messages/{message_id}/read")
