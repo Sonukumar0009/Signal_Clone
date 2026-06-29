@@ -43,7 +43,12 @@ export function Sidebar() {
         console.error("Failed to load conversations", e);
       }
     }
+    // Fetch immediately
     fetchConversations();
+
+    // Poll every 3 seconds so new messages and conversations appear automatically
+    const interval = setInterval(fetchConversations, 3000);
+    return () => clearInterval(interval);
   }, [setConversations]);
 
   const handleLogout = async () => {
